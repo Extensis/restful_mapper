@@ -161,6 +161,9 @@ public:
     std::map<std::string, double> to_double_map() const;
     std::map<std::string, bool> to_bool_map() const;
 
+    bool exists(const std::string &key) const;
+    bool find(const std::string &key, Node &node) const;
+
     operator std::string() const { return to_string(); }
     operator int() const { return to_int(); }
     operator long long() const { return to_int(); }

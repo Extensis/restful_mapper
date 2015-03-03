@@ -1175,6 +1175,26 @@ map<string, bool> Json::Node::to_bool_map() const
   return r;
 }
 
+bool Json::Node::exists(const string &key) const
+{
+    const char *path[] = { key.c_str(), (const char *) 0 };
+    return yajl_tree_get(JSON_TREE_HANDLE, path, yajl_t_any) != NULL;
+}
+
+bool Json::Node::find(const string &key, Json::Node &node) const
+{
+    const char *path[] = { key.c_str(), (const char *) 0 };
+    yajl_val value = yajl_tree_get(JSON_TREE_HANDLE, path, yajl_t_any);
+  
+    if (value != NULL)
+    {
+        node = Node(key, value);
+        return true;
+    }
+    
+    return false;
+}
+
 Json::Parser::Parser()
 {
   json_tree_ptr_ = NULL;

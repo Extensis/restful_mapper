@@ -269,3 +269,19 @@ TEST(JsonTest, AddValueToArray)
     ASSERT_EQ(0, node.to_map().size());
     ASSERT_EQ(0, array.to_array()[5].to_map().size());
 }
+
+TEST(JsonTest, NodeFind)
+{
+    Json::Parser parser("{\"exists\": 1}");
+    Json::Node node;
+    
+    ASSERT_TRUE(parser.is_loaded());
+    
+    ASSERT_TRUE(parser.root().exists("exists"));
+    ASSERT_TRUE(parser.root().find("exists", node));
+    ASSERT_EQ("exists", node.name());
+    ASSERT_EQ(1, node.to_int());
+    
+    ASSERT_FALSE(parser.root().exists("does-not-exist"));
+    ASSERT_FALSE(parser.root().find("does-not-exist", node));
+}
