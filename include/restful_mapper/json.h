@@ -145,7 +145,7 @@ public:
     bool add_map(Json::Node &outNode);
 
     std::string to_string() const;
-    long long to_int() const;
+    int to_int() const;
     double to_double() const;
     bool to_bool() const;
 

@@ -983,7 +983,7 @@ string Json::Node::to_string() const
   return utf8_to_local(YAJL_GET_STRING(JSON_TREE_HANDLE));
 }
 
-long long Json::Node::to_int() const
+int Json::Node::to_int() const
 {
   if (!YAJL_IS_INTEGER(JSON_TREE_HANDLE))
   {
