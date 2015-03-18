@@ -14,8 +14,13 @@ string iconv_string(const string &value, const char *to, const char *from)
   // Prepare source buffers
   size_t src_len = value.size();
   char *src      = new char[src_len];
+#ifdef WIN32
+#pragma warning(disable: 4996)
   value.copy(src, src_len);
-
+#else
+  value.copy(src, src_len);
+#endif
+    
   // Prepare destination buffer
   size_t buf_len = src_len + 3;
   size_t dst_len = buf_len;
@@ -39,7 +44,11 @@ string iconv_string(const string &value, const char *to, const char *from)
 
   while (src_len)
   {
-    size_t status = iconv(conv, &src_ptr, src_len_ptr, &dst_ptr, dst_len_ptr);
+#if WIN32 && !WIN64
+    size_t status = iconv(conv, (const char**) &src_ptr, src_len_ptr, &dst_ptr, dst_len_ptr);
+#else
+	size_t status = iconv(conv, &src_ptr, src_len_ptr, &dst_ptr, dst_len_ptr);
+#endif
 
     if (status == (size_t)(-1))
     {

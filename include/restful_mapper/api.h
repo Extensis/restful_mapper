@@ -205,6 +205,7 @@ public:
     }
     catch (std::runtime_error &e)
     {
+	  (void) e;
       // Swallow
     }
   }
@@ -249,6 +250,7 @@ public:
     }
     catch (std::runtime_error &e)
     {
+	  (void) e;
       // Swallow
     }
   }
@@ -341,7 +343,7 @@ private:
   {
     std::string formatted(field);
     std::replace(formatted.begin(), formatted.end(), '_', ' ');
-    formatted[0] = std::toupper(formatted[0]);
+    formatted[0] = (char) std::toupper(formatted[0]);
     return formatted;
   }
 };

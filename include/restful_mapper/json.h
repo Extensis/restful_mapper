@@ -132,6 +132,7 @@ public:
 
     bool add_string(const std::string &key, const std::string &string_value, Json::Node &outNode);
     bool add_int(const std::string &key, int int_value, Json::Node &outNode);
+    bool add_int64(const std::string &key, long long int_value, Json::Node &outNode);
     bool add_double(const std::string &key, double double_value, Json::Node &outNode);
     bool add_bool(const std::string &key, bool bool_value, Json::Node &outNode);
     bool add_array(const std::string &key, Json::Node &outNode);
@@ -139,6 +140,7 @@ public:
     
     bool add_string(const std::string &string_value, Json::Node &outNode);
     bool add_int(int int_value, Json::Node &outNode);
+    bool add_int64(long long int_value, Json::Node &outNode);
     bool add_double(double double_value, Json::Node &outNode);
     bool add_bool(bool bool_value, Json::Node &outNode);
     bool add_array(Json::Node &outNode);
@@ -146,6 +148,7 @@ public:
 
     std::string to_string() const;
     int to_int() const;
+    long long to_int64() const;
     double to_double() const;
     bool to_bool() const;
 

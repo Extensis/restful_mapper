@@ -107,7 +107,7 @@ string Api::del_(const string &endpoint) const
  */
 string Api::escape_(const string &value) const
 {
-  char *curl_esc = curl_easy_escape(CURL_HANDLE, value.c_str(), value.size());
+  char *curl_esc = curl_easy_escape(CURL_HANDLE, value.c_str(), (int) value.size());
   string escaped(curl_esc);
   curl_free(curl_esc);
 
@@ -210,6 +210,9 @@ string Api::send_request(const RequestType &type, const string &endpoint, const 
       curl_easy_setopt(CURL_HANDLE, CURLOPT_CUSTOMREQUEST, "DELETE");
 
       break;
+      
+    default:
+        break;
   }
 
   switch (type)
@@ -226,6 +229,9 @@ string Api::send_request(const RequestType &type, const string &endpoint, const 
       header = curl_slist_append(header, MAKE_HEADER("Content-Type", content_type_));
 
       break;
+    
+    default:
+        break;
   }
 
   // Set callback function
@@ -378,7 +384,7 @@ void Api::check_http_error(const RequestType &type, const string &endpoint, long
     ostringstream s;
     s << "Server at \"" << url(endpoint) << "\" responded with code " << http_code;
 
-    throw ResponseError(s.str(), http_code, response_body);
+    throw ResponseError(s.str(), (const int) http_code, response_body);
   }
 }
 

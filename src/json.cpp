@@ -43,6 +43,9 @@ void yajl_gen_error(const yajl_gen_status &status)
 
     case yajl_gen_invalid_string:
       throw runtime_error("An invalid UTF-8 string was passed to the JSON generator");
+    
+    default:
+        break;
   }
 }
 
@@ -467,7 +470,7 @@ void Json::Emitter::emit_array_close()
   yajl_gen_error(yajl_gen_array_close(JSON_GEN_HANDLE));
 }
 
-yajl_val new_number(int int_value, double double_value, int flags)
+yajl_val new_number(long long int_value, double double_value, int flags)
 {
     ostringstream s;
     std::string number_string;
@@ -521,7 +524,7 @@ yajl_val new_string(const std::string &string_value)
     
     value->type = yajl_t_string;
     
-    value->u.string = (char*) malloc(string_value.length());
+    value->u.string = (char*) malloc(string_value.length() + 1);
     
     if (value->u.string == NULL)
     {
@@ -735,7 +738,7 @@ bool add_value(yajl_val obj, yajl_val value)
     return true;
 }
 
-yajl_val add_number(yajl_val obj, const std::string &key, int int_value, double double_value, int flags)
+yajl_val add_number(yajl_val obj, const std::string &key, long long int_value, double double_value, int flags)
 {
     yajl_val value = new_number(int_value, double_value, flags);
     
@@ -752,7 +755,7 @@ yajl_val add_number(yajl_val obj, const std::string &key, int int_value, double 
     return value;
 }
 
-yajl_val add_number(yajl_val obj, int int_value, double double_value, int flags)
+yajl_val add_number(yajl_val obj, long long int_value, double double_value, int flags)
 {
     yajl_val value = new_number(int_value, double_value, flags);
     
@@ -789,6 +792,19 @@ bool Json::Node::add_string(const std::string &key, const std::string &string_va
 }
 
 bool Json::Node::add_int(const std::string &key, int int_value, Json::Node &outNode)
+{
+    yajl_val value = add_number(JSON_TREE_HANDLE, key, int_value, (double) int_value, YAJL_NUMBER_INT_VALID);
+    
+    if (value != NULL)
+    {
+        outNode = Json::Node(key, value);
+        return true;
+    }
+    
+    return false;
+}
+
+bool Json::Node::add_int64(const std::string &key, long long int_value, Json::Node &outNode)
 {
     yajl_val value = add_number(JSON_TREE_HANDLE, key, int_value, (double) int_value, YAJL_NUMBER_INT_VALID);
     
@@ -903,6 +919,19 @@ bool Json::Node::add_int(int int_value, Json::Node &outNode)
     return false;
 }
 
+bool Json::Node::add_int64(long long int_value, Json::Node &outNode)
+{
+    yajl_val value = add_number(JSON_TREE_HANDLE, int_value, (double) int_value, YAJL_NUMBER_INT_VALID);
+    
+    if (value != NULL)
+    {
+        outNode = Json::Node("", value);
+        return true;
+    }
+    
+    return false;
+}
+
 bool Json::Node::add_double(double double_value, Json::Node &outNode)
 {
     yajl_val value = add_number(JSON_TREE_HANDLE, (int) double_value, double_value, YAJL_NUMBER_DOUBLE_VALID);
@@ -984,6 +1013,16 @@ string Json::Node::to_string() const
 }
 
 int Json::Node::to_int() const
+{
+  if (!YAJL_IS_INTEGER(JSON_TREE_HANDLE))
+  {
+    yajl_wrong_type(name_, JSON_TREE_HANDLE, "INTEGER");
+  }
+
+  return (int) YAJL_GET_INTEGER(JSON_TREE_HANDLE);
+}
+
+long long Json::Node::to_int64() const
 {
   if (!YAJL_IS_INTEGER(JSON_TREE_HANDLE))
   {
@@ -1198,6 +1237,8 @@ bool Json::Node::find(const string &key, Json::Node &node) const
 Json::Parser::Parser()
 {
   json_tree_ptr_ = NULL;
+  
+  load("{}");
 }
 
 Json::Parser::Parser(const string &json_struct)
